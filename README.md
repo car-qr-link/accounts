@@ -49,6 +49,7 @@
 
 ## Дополнительные требования
 
-1. Сервис должен быть упакован в Docker.
-2. Должен быть `docker-compose.yml` со всеми зависимостями для разработки и тестирования.
-3. В идеале - GitHub Actions с тестированием, линтингом и сборкой Docker-контейнера. В качестве реестра контейнеров предлагаю использовать сам GitHub: https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
+1. Создание и обновление структуры БД выполняется через миграции из состава TypeORM.
+2. Сервис должен быть упакован в Docker.
+3. Должен быть `docker-compose.yml` со всеми зависимостями для разработки и тестирования.
+4. В идеале - GitHub Actions с тестированием, линтингом и сборкой Docker-контейнера. В качестве реестра контейнеров предлагаю использовать сам GitHub: https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
