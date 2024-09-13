@@ -1,6 +1,7 @@
 
 export interface SearchAccountParams {
-    nameField: string;
+    value: string;
+    field: string;
   }
 
 
