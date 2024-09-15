@@ -50,11 +50,13 @@ export class AccountController {
             {
             if (param.hasOwnProperty('id')
                 && param.id != '')
+                {
                 return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
+                }
             }
     }   
 
-    //Возвращает список аккаунтов
+    //Возвращает список qr кодов
     @Get('qrs')
     async getQrs (@Query() query: GetQrsResponse) {
         
@@ -68,6 +70,20 @@ export class AccountController {
                 }
             }
         return await this.AccountsService.getQrs(0)
+    }
+
+    //Возвращает qr код по id
+    @Get('qrs/:id')
+    async getQr (@Param() param: any) {
+        if (typeof(param) == 'object')
+            {
+            if (param.hasOwnProperty('id')
+                && param.id != '')
+                {
+                    return await this.AccountsService.getQr(param.id)
+                }
+        
+            }
     }
 
 }
