@@ -5,7 +5,7 @@ import { Account, Qr, Contact } from './schemas/accounts';
 
 
 @Injectable()
-export class AccountsService {
+export class AccountService {
     constructor(
         @InjectRepository(Account)        
         private AccountsRepository: Repository<Account>,
@@ -26,7 +26,7 @@ export class AccountsService {
         const select = {}
         let account = null
         try {            
-            if (field = 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
+            if (field == 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
             {
                 if (value.substring(0, 1) == ' ')
                 {
@@ -49,6 +49,20 @@ export class AccountsService {
         
     }
     
+    //Обновляет данные аккаунта:
+    async updateAccount(id: number, name: string, phone: string): Promise<Account> {
+        const acc = await this.getAccount(id, 'id')
+        console.log(acc)
+        acc.name  = name;
+        acc.phone = phone;
+        console.log(acc)
+        try {  
+            return await this.AccountsRepository.save(acc)
+        } catch (error) {
+            throw new ConflictException(`Возникла ошибка при обновлении аккаунта в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
+        }
+    }
+
     //Сохранение данных пользователя в базе: (в процессе разработки)
     async create(id: number, firstName: string): Promise<void> {
         const acc = new Account();

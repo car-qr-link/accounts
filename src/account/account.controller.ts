@@ -1,24 +1,24 @@
-import { Controller, Get, Post, Put, Param, Query} from '@nestjs/common';
-import { SearchAccountParams } from './interfaces/account.interface';
-import { AccountsService } from './account.service';
+import { Controller, Get, Post, Put, Param, Query, Patch, Body} from '@nestjs/common';
+import { GetAccountResponse, EditAccountResponse } from './interfaces/account.interface';
+import { AccountService } from './account.service';
 
 @Controller()
-export class AccountsController {
+export class AccountController {
 
     constructor(
-        private readonly AccountsService: AccountsService
+        private readonly AccountsService: AccountService
     ) {}
 
     //Возвращает список аккаунтов
     @Get('accounts')
-    async getAccounts () {
-        return await this.AccountsService.getAccounts()      
+    async getAccount () {
+        return await this.AccountsService.getAccounts()
     }
 
     //Поиск аккаунта 
     //Праметры: 1 значение поля поиска, 2 имя поля поиска
     @Get('accounts/:id')
-    async getAccountsId(@Param() param: any ,@Query() query: SearchAccountParams) {
+    async getAccountId(@Param() param: any ,@Query() query: GetAccountResponse) {
         
         //Если в запрос были переданны параметры после ?, то сначала пробуем выполнить поиск по этим параметрам
         if (typeof(query) == 'object')
@@ -41,5 +41,18 @@ export class AccountsController {
             }        
       
     }
+
+    //Изменение аккаунта
+    @Patch('accounts/:id')
+    async updateAccount(@Param() param: any ,@Body() body: any) {
+        if (typeof(param) == 'object')
+            {
+            if (param.hasOwnProperty('id')
+                && param.id != '')
+                console.log(param.id)
+                console.log(body)
+                return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
+            }
+    }   
 
 }
