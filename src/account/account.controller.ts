@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Param, Query, Patch, Body} from '@nestjs/common';
-import { GetAccountResponse, EditAccountResponse } from './interfaces/account.interface';
+import { GetAccountResponse, EditAccountResponse, GetQrsResponse } from './interfaces/account.interface';
 import { AccountService } from './account.service';
 
 @Controller()
@@ -11,12 +11,12 @@ export class AccountController {
 
     //Возвращает список аккаунтов
     @Get('accounts')
-    async getAccount () {
+    async getAccounts () {
         return await this.AccountsService.getAccounts()
     }
 
-    //Поиск аккаунта 
-    //Праметры: 1 значение поля поиска, 2 имя поля поиска
+    //Возвращает аккаунт по найденым полям аккаунта 
+    //Праметры: param - объект с полем id, query - объект с двумя полями: value - значение поля поиска, field - имя поля поиска
     @Get('accounts/:id')
     async getAccountId(@Param() param: any ,@Query() query: GetAccountResponse) {
         
@@ -43,16 +43,31 @@ export class AccountController {
     }
 
     //Изменение аккаунта
+    //Праметры: param - объект с полем id, body - объект EditAccountResponse
     @Patch('accounts/:id')
-    async updateAccount(@Param() param: any ,@Body() body: any) {
+    async updateAccount(@Param() param: any ,@Body() body: EditAccountResponse) {
         if (typeof(param) == 'object')
             {
             if (param.hasOwnProperty('id')
                 && param.id != '')
-                console.log(param.id)
-                console.log(body)
                 return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
             }
     }   
+
+    //Возвращает список аккаунтов
+    @Get('qrs')
+    async getQrs (@Query() query: GetQrsResponse) {
+        
+         //Если в запрос были переданны параметры после ?, то сначала пробуем выполнить поиск по этим параметрам
+        if (typeof(query) == 'object')
+            {
+                if (query.hasOwnProperty('id')
+                    && query.id > 0)
+                {
+                    return await this.AccountsService.getQrs(query.id)
+                }
+            }
+        return await this.AccountsService.getQrs(0)
+    }
 
 }
