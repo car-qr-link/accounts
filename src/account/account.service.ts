@@ -60,7 +60,7 @@ export class AccountService {
         }
     }
 
-    //Возвращает список всех аккаунтов:
+    //Возвращает список всех qr кодов или одно по отбору
     async getQrs(id: Number): Promise<Qr[]> { 
         
         if (id != 0) //Если в get запрос был передан параметр отбор по id, то используем поиск по полю
@@ -76,6 +76,21 @@ export class AccountService {
             return [qr]
         }
         return await this.QrsRepository.find()
+    }
+
+    //Возвращает qr код по id:
+    async getQr(id: Number): Promise<Qr> {         
+        
+        const select = {}
+        select['id'] = id
+        const qr:Qr = await this.QrsRepository.findOneBy(select)
+        if (qr == null) //Проверим - вернулся ли заполненный объект
+            {
+                throw new BadRequestException('Qr не найден.', { cause: new Error(), description: 'Qr не найден.' })
+            }
+            
+        return qr
+
     }
 
     //Сохранение данных пользователя в базе: (в процессе разработки)
