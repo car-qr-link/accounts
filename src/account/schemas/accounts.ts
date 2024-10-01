@@ -57,7 +57,7 @@ export class Qr {
   @Column("varchar", { length: 8, nullable: false })
   code: string;
 
-  @Index({ unique: true })
+  @Index()
   @Column("int", { nullable: true })
   account: number
 

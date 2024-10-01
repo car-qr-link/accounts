@@ -24,7 +24,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -92,6 +93,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+user_settings/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
