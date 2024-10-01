@@ -1,23 +1,24 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account, Qr, Contact } from './schemas/accounts';
+//import { BaseAccount,  accounts, GetAccountResponse  } from '@car-qr-link/apis';
 
 
 @Injectable()
 export class AccountService {
     constructor(
         @InjectRepository(Account)        
-        private AccountsRepository: Repository<Account>,
+        private accountsRepository: Repository<Account>,
         @InjectRepository(Qr)
-        private QrsRepository: Repository<Qr>
+        private qrsRepository: Repository<Qr>
 
       ) {}
     
     //Возвращает список всех аккаунтов:
     async getAccounts(): Promise<Account[]> { 
 
-        return await this.AccountsRepository.find()
+        return await this.accountsRepository.find()
     }
 
     //Возвращает аккаунт по заданным параметрам:
@@ -35,14 +36,14 @@ export class AccountService {
             }
             
             select [field] = value
-            account = await this.AccountsRepository.findOneBy(select)
+            account = await this.accountsRepository.findOneBy(select)
 
         } catch (error) {
-            throw new ConflictException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
+            throw new InternalServerErrorException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
         }
         if (account == null) //Проверим - вернулся ли заполненный объект
                 {
-                    throw new BadRequestException('Аккаунт не найден.', { cause: new Error(), description: 'Аккаунт не найден.' })
+                    throw new NotFoundException('Аккаунт не найден.', { cause: new Error(), description: 'Аккаунт не найден.' })
                 }
             
             return account        
@@ -54,9 +55,9 @@ export class AccountService {
         acc.name  = name
         acc.phone = phone
         try {  
-            return await this.AccountsRepository.save(acc)
+            return await this.accountsRepository.save(acc)
         } catch (error) {
-            throw new ConflictException(`Возникла ошибка при обновлении аккаунта в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
+            throw new InternalServerErrorException(`Возникла ошибка при обновлении аккаунта в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
         }
     }
 
@@ -67,15 +68,15 @@ export class AccountService {
         {   
             const select = {}
             select['account'] = id
-            const qr:Qr = await this.QrsRepository.findOneBy(select)
+            const qr:Qr = await this.qrsRepository.findOneBy(select)
             if (qr == null) //Проверим - вернулся ли заполненный объект
                 {
-                    throw new BadRequestException('Qr не найден.', { cause: new Error(), description: 'Qr не найден.' })
+                    throw new NotFoundException('Qr не найден.', { cause: new Error(), description: 'Qr не найден.' })
                 }
             
             return [qr]
         }
-        return await this.QrsRepository.find()
+        return await this.qrsRepository.find()
     }
 
     //Возвращает qr код по id:
@@ -83,10 +84,10 @@ export class AccountService {
         
         const select = {}
         select['id'] = id
-        const qr:Qr = await this.QrsRepository.findOneBy(select)
+        const qr:Qr = await this.qrsRepository.findOneBy(select)
         if (qr == null) //Проверим - вернулся ли заполненный объект
             {
-                throw new BadRequestException('Qr не найден.', { cause: new Error(), description: 'Qr не найден.' })
+                throw new NotFoundException('Qr не найден.', { cause: new Error(), description: 'Qr не найден.' })
             }
             
         return qr
@@ -98,8 +99,8 @@ export class AccountService {
         const acc = new Account();
         acc.name  = 'test';
         acc.phone = '+79297785827';
-        const account = await this.AccountsRepository.save(acc)
-        console.log(await this.QrsRepository.save({code: 'dfadsfd', account: account.id}))
+        const account = await this.accountsRepository.save(acc)
+        console.log(await this.qrsRepository.save({code: 'dfadsfd', account: account.id}))
     }
 
    
