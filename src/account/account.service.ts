@@ -2,7 +2,8 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account, Qr, Contact } from './schemas/accounts';
-//import { BaseAccount,  accounts, GetAccountResponse  } from '@car-qr-link/apis';
+import { BaseAccount,  accounts } from '@car-qr-link/apis';
+
 
 
 @Injectable()
@@ -16,7 +17,8 @@ export class AccountService {
       ) {}
     
     //Возвращает список всех аккаунтов:
-    async getAccounts(): Promise<Account[]> { 
+    //async getAccounts(): Promise<Account[]> { 
+    async getAccounts(): Promise<accounts.GetAccountsResponse> { 
 
         return await this.accountsRepository.find()
     }
