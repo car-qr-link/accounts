@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Any, Repository } from 'typeorm';
 import { Account, Qr, Contact } from './schemas/accounts';
 import { BaseAccount,  accounts } from '@car-qr-link/apis';
 
@@ -24,10 +24,11 @@ export class AccountService {
     }
 
     //Возвращает аккаунт по заданным параметрам:
-    async getAccount(value: any, field: string): Promise<Account> {        
+    //async getAccount(value: any, field: string): Promise<Account> { 
+    async getAccount(value: any, field: string): Promise<accounts.GetAccountResponse> {        
         
         const select = {}
-        let account = null
+        let result = {'account': accounts.Account, 'qrs': new Array}
         try {            
             if (field == 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
             {
@@ -38,17 +39,17 @@ export class AccountService {
             }
             
             select [field] = value
-            account = await this.accountsRepository.findOneBy(select)
+            //result.account = await this.accountsRepository.findOneBy(select)
 
         } catch (error) {
             throw new InternalServerErrorException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
         }
-        if (account == null) //Проверим - вернулся ли заполненный объект
+        if (result == null) //Проверим - вернулся ли заполненный объект
                 {
                     throw new NotFoundException('Аккаунт не найден.', { cause: new Error(), description: 'Аккаунт не найден.' })
                 }
             
-            return account        
+            return result        
     }
     
     //Обновляет данные аккаунта:
