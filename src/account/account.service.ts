@@ -17,10 +17,10 @@ export class AccountService {
       ) {}
     
     //Возвращает список всех аккаунтов:
-    //async getAccounts(): Promise<Account[]> { 
     async getAccounts(): Promise<accounts.GetAccountsResponse> { 
-
-        return await this.accountsRepository.find()
+        const result = {'accounts': new Array}
+        result.accounts = await this.accountsRepository.find()
+        return result
     }
 
     //Возвращает аккаунт по заданным параметрам:
