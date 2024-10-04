@@ -24,11 +24,16 @@ export class AccountService {
     }
 
     //Возвращает аккаунт по заданным параметрам:
-    //async getAccount(value: any, field: string): Promise<Account> { 
     async getAccount(value: any, field: string): Promise<accounts.GetAccountResponse> {        
         
         const select = {}
-        let result = {'account': accounts.Account, 'qrs': new Array}
+        const result: accounts.GetAccountResponse = {
+            account: {
+                id: '',
+                contacts: []
+            },
+            qrs: []
+        }
         try {            
             if (field == 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
             {
@@ -39,7 +44,9 @@ export class AccountService {
             }
             
             select [field] = value
-            //result.account = await this.accountsRepository.findOneBy(select)
+            const findAccount   = await this.accountsRepository.findOneBy(select)
+            result.account.id   = findAccount.id.toString()
+            result.account.name = findAccount.name
 
         } catch (error) {
             throw new InternalServerErrorException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
