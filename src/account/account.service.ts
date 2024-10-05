@@ -32,7 +32,7 @@ export class AccountService {
                 id: '',
                 contacts: []
             },
-            qrs: []
+            qrs: [{'id': '', 'licensePlate': '', 'accountId': ''}]
         }
         try {            
             if (field == 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
@@ -43,10 +43,20 @@ export class AccountService {
                 }
             }
             
+            //Получаем данные по аккаунту:
             select [field] = value
-            const findAccount   = await this.accountsRepository.findOneBy(select)
-            result.account.id   = findAccount.id.toString()
-            result.account.name = findAccount.name
+            const foundAccount   = await this.accountsRepository.findOneBy(select)
+            result.account.id   = foundAccount.id.toString()
+            result.account.name = foundAccount.name
+            result.qrs = []
+            
+            //Получаем данные по qr кодам:
+            select['account'] = foundAccount.id
+            const foundQrs = await this.qrsRepository.find(select)
+            foundQrs.forEach((item, index, array) => {
+                result.qrs.push({'id': item.id.toString(), 'licensePlate': item.code, 'accountId': result.account.id})
+            })
+            
 
         } catch (error) {
             throw new InternalServerErrorException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
@@ -60,16 +70,16 @@ export class AccountService {
     }
     
     //Обновляет данные аккаунта:
-    async updateAccount(id: number, name: string, phone: string): Promise<Account> {
-        const acc = await this.getAccount(id, 'id')
-        acc.name  = name
-        acc.phone = phone
-        try {  
-            return await this.accountsRepository.save(acc)
-        } catch (error) {
-            throw new InternalServerErrorException(`Возникла ошибка при обновлении аккаунта в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
-        }
-    }
+    //async updateAccount(id: number, name: string, phone: string): Promise<Account> {
+        //const acc = await this.getAccount(id, 'id')
+        //acc.name  = name
+        //acc.phone = phone
+       // try {  
+        //    return await this.accountsRepository.save(acc)
+       // } catch (error) {
+       //     throw new InternalServerErrorException(`Возникла ошибка при обновлении аккаунта в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
+       // }
+    //}
 
     //Возвращает список всех qr кодов или одно по отбору
     async getQrs(id: Number): Promise<Qr[]> { 

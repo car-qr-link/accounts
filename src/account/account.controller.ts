@@ -40,22 +40,21 @@ export class AccountController {
                 return await this.AccountsService.getAccount(param.id, 'id') 
                 }
             }        
-      
     }
 
     //Изменение аккаунта
     //Праметры: param - объект с полем id, body - объект EditAccountResponse
-    @Patch('accounts/:id')
-    async updateAccount(@Param() param: any ,@Body() body: EditAccountResponse) {
-        if (typeof(param) == 'object')
-            {
-            if (param.hasOwnProperty('id')
-                && param.id != '')
-                {
-                return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
-                }
-            }
-    }   
+    //@Patch('accounts/:id')
+    //async updateAccount(@Param() param: any ,@Body() body: EditAccountResponse) {
+    //    if (typeof(param) == 'object')
+    //        {
+    //        if (param.hasOwnProperty('id')
+    //            && param.id != '')
+    //            {
+    //            return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
+    //            }
+    //        }
+    //}   
 
     //Возвращает список qr кодов
     @Get('qrs')
