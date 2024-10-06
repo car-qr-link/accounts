@@ -12,7 +12,9 @@ export class AccountService {
         @InjectRepository(Account)        
         private accountsRepository: Repository<Account>,
         @InjectRepository(Qr)
-        private qrsRepository: Repository<Qr>
+        private qrsRepository: Repository<Qr>,
+        @InjectRepository(Contact)
+        private contactRepository: Repository<Contact>
 
       ) {}
     
@@ -30,9 +32,9 @@ export class AccountService {
         const result: accounts.GetAccountResponse = {
             account: {
                 id: '',
-                contacts: [{'channel': NotificationChannel.Phone, 'address': ''}]
+                contacts: []
             },
-            qrs: [{'id': '', 'licensePlate': '', 'accountId': ''}]
+            qrs: []
         }
         try {            
             if (field == 'phone') //при передачи символа + в параметре get запроса он заменяется на пробел:
@@ -50,6 +52,13 @@ export class AccountService {
             result.account.name = foundAccount.name
             result.qrs = []
             
+            //Получаем данные по контактной информации:
+            select['account'] = foundAccount.id
+            const foundContacts = await this.contactRepository.find(select)
+            foundContacts.forEach((item, index, array) => {
+                result.account.contacts.push({'channel': NotificationChannel.Phone, 'address': item.address})
+            })  
+
             //Получаем данные по qr кодам:
             select['account'] = foundAccount.id
             const foundQrs = await this.qrsRepository.find(select)
