@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import { Any, Repository } from 'typeorm';
 import { Account, Qr, Contact } from './schemas/accounts';
-import { BaseAccount,  accounts } from '@car-qr-link/apis';
+import { BaseAccount,  accounts, NotificationChannel } from '@car-qr-link/apis';
 
 
 
@@ -30,7 +30,7 @@ export class AccountService {
         const result: accounts.GetAccountResponse = {
             account: {
                 id: '',
-                contacts: []
+                contacts: [{'channel': NotificationChannel.Phone, 'address': ''}]
             },
             qrs: [{'id': '', 'licensePlate': '', 'accountId': ''}]
         }
@@ -55,8 +55,7 @@ export class AccountService {
             const foundQrs = await this.qrsRepository.find(select)
             foundQrs.forEach((item, index, array) => {
                 result.qrs.push({'id': item.id.toString(), 'licensePlate': item.code, 'accountId': result.account.id})
-            })
-            
+            })            
 
         } catch (error) {
             throw new InternalServerErrorException(`Возникла ошибка при поске в базе данных: ${error.title}. Описание ошибки: ${error.message}`);
