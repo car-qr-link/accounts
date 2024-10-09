@@ -56,7 +56,10 @@ export class AccountService {
             select['account'] = foundAccount.id
             const foundContacts = await this.contactRepository.find(select)
             foundContacts.forEach((item, index, array) => {
-                result.account.contacts.push({'channel': NotificationChannel.Phone, 'address': item.address})
+                let chanel = NotificationChannel.Phone
+                if (item.type == 'email') {chanel =  NotificationChannel.Email}
+                if (item.type == 'telegram') {chanel =  NotificationChannel.Telegram}
+                result.account.contacts.push({'channel': chanel, 'address': item.address}) 
             })  
 
             //Получаем данные по qr кодам:
