@@ -131,7 +131,7 @@ export class AccountService {
         acc.name  = 'test';
         acc.phone = '+79297785827';
         const account = await this.accountsRepository.save(acc)
-        console.log(await this.qrsRepository.save({code: 'dfadsfd', account: account.id}))
+        //console.log(await this.qrsRepository.save({code: 'dfadsfd', account: account.id}))
     }
 
    

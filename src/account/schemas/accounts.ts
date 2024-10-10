@@ -1,4 +1,4 @@
-import { Entity, Column, Index, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm'
+import { Entity, Column, Index, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm'
 
 @Entity('Accounts')
 export class Account {
@@ -31,9 +31,10 @@ export class Contact {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Index({ unique: true })
-  @Column("int", { nullable: true })
-  account: number
+  @Index()
+  @ManyToOne((type) => Account)
+  @JoinColumn()
+  account: Account
 
   @Column("varchar", { length: 8, nullable: false })
   type: string;
@@ -58,8 +59,9 @@ export class Qr {
   code: string;
 
   @Index()
-  @Column("int", { nullable: true })
-  account: number
+  @ManyToOne((type) => Account)
+  @JoinColumn()
+  account: Account
 
   @CreateDateColumn({ type: "datetime", nullable: false })
   created_at: Date;
@@ -67,6 +69,4 @@ export class Qr {
   @UpdateDateColumn({ type: "datetime", nullable: false })
   updated_at: Date;
 
-  //@ManyToOne(() => Accounts, (accountId) => accountId.qrs)
-  //accountId: Accounts
 }
