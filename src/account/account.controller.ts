@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Param, Query, Patch, Body} from '@nestjs/common';
 import { GetAccountResponse, EditAccountResponse, GetQrsResponse } from './interfaces/account.interface';
-import { BaseAccount, NotificationChannel, accounts } from '@car-qr-link/apis';
+import { accounts } from '@car-qr-link/apis';
 import { AccountService } from './account.service';
 
 @Controller()
@@ -19,7 +19,7 @@ export class AccountController {
     //Возвращает аккаунт по найденым полям аккаунта 
     //Праметры: param - объект с полем id, query - объект с двумя полями: value - значение поля поиска, field - имя поля поиска
     @Get('accounts/:id')
-    async getAccountId(@Param() param: any ,@Query() query: GetAccountResponse) {
+    async getAccountId(@Param() param: any, @Query() query: GetAccountResponse) {
         
         //Если в запрос были переданны параметры после ?, то сначала пробуем выполнить поиск по этим параметрам
         if (typeof(query) == 'object')
@@ -86,4 +86,17 @@ export class AccountController {
             }
     }
 
+    //Привязывает новый qr код к аккаунту
+    @Patch('/qrs/:id')
+    async bindQr (@Param() param: any, @Query() query: accounts.LinkQrRequest) {
+        if (typeof(param) == 'object')
+            {
+            if (param.hasOwnProperty('id')
+                && param.id != '')
+                {
+                    
+                }
+        
+            }
+    }
 }
