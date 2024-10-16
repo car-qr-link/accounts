@@ -16,7 +16,7 @@ import { Account, Qr, Contact } from './account/schemas/accounts';
       password: '12345678',
       database: 'accounts',
       entities: [Account, Qr, Contact],
-      synchronize: true,
+      synchronize: false,
     })
   ],
   controllers: [AppController],
