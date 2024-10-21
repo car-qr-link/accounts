@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Query, Patch, Body} from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Query, Patch, Body, NotFoundException} from '@nestjs/common';
 import { GetAccountResponse, EditAccountResponse, GetQrsResponse } from './interfaces/account.interface';
 import { accounts } from '@car-qr-link/apis';
 import { AccountService } from './account.service';
@@ -88,15 +88,36 @@ export class AccountController {
 
     //Привязывает новый qr код к аккаунту
     @Patch('/qrs/:id')
-    async bindQr (@Param() param: any, @Query() query: accounts.LinkQrRequest) {
-        if (typeof(param) == 'object')
-            {
-            if (param.hasOwnProperty('id')
-                && param.id != '')
-                {
-                    
-                }
+    async bindQr (@Param() param: any, @Body() body: accounts.LinkQrRequest) {
         
+        //Получим id акка
+        let id:string = ''
+        if (typeof(param) == 'object')
+        {
+            if (param.hasOwnProperty('id'))
+            {
+                id = param.id.trim()
             }
+        }
+        
+        if (id != '')
+        {
+            if (typeof(body) == 'object')
+                {
+                    if (body.hasOwnProperty('account'))
+                    {
+                        return await this.AccountsService.create(id, body.account.name)
+                    }
+                    else 
+                    {
+                        throw new NotFoundException('В теле запроса не переданно поле account.', { cause: new Error()})
+                    }
+                }
+        }
+        else {
+            throw new NotFoundException('Не верно передан id аккаунта.', { cause: new Error()})
+        }
+
+        
     }
 }
