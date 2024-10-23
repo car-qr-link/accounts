@@ -126,7 +126,7 @@ export class AccountService {
     }
 
     //Сохранение данных пользователя в базе: (в процессе разработки)
-    async create(id: number, firstName: string): Promise<void> {
+    async create(firstName: string): Promise<void> {
         const acc = new Account();
         acc.name  = 'test';
         acc.phone = '+79297785827';
@@ -134,6 +134,71 @@ export class AccountService {
         //console.log(await this.qrsRepository.save({code: 'dfadsfd', account: account.id}))
     }
 
+    //Проверка тела запроса  для создания аккаунта на предмет все ли поля переданы
+    checkBody(body: accounts.LinkQrRequest)
+    {
+        if (typeof(body) == 'object') {
+                if (body.hasOwnProperty('account')) {
+                    if (typeof(body.account) == 'object') {
+                        if (body.account.hasOwnProperty('name')) {
+                            if (body.account.name == '') {
+                                throw new NotFoundException('В account поле name не заполнено.', { cause: new Error()})
+                            }                            
+                        }
+                        else {
+                            throw new NotFoundException('В account отсутствует поле name.', { cause: new Error()})
+                        }
+                        if (body.account.hasOwnProperty('contacts')) {
+                            for (let element of body.account.contacts) {
+                                if (typeof(element) == 'object') {
+                                    if (!element.hasOwnProperty('channel')) {
+                                        throw new NotFoundException('В массиве contacts в объекте отсуствует поле channel.', { cause: new Error()})
+                                    }
+                                    if (element.hasOwnProperty('address')) {  
+                                        if (element.address == '')
+                                        {
+                                            throw new NotFoundException('В массиве contacts в объекте поле address не заполнено.', { cause: new Error()})
+                                        }
+                                    }
+                                    else {
+                                        throw new NotFoundException('В массиве contacts в объекте отсуствует поле address.', { cause: new Error()})
+                                    }
+                                }
+                                else {
+                                    throw new NotFoundException('В массиве contacts должен быть объекты с полями: channel и address.', { cause: new Error()})
+                                }
+                            }                                
+                        }
+                        else {
+                            throw new NotFoundException('В account отсутствует массив contacts.', { cause: new Error()})
+                        }
+
+                    }
+                    else {
+                        throw new NotFoundException('Поле account должно быть объектного типа.', { cause: new Error()})
+                    }                                
+                }
+                else {
+                    throw new NotFoundException('В теле запроса не переданно поле account.', { cause: new Error()})
+                }
+                if (body.hasOwnProperty('qr')) {
+                    if (body.qr.hasOwnProperty('licensePlate')) {
+                        if (body.qr.licensePlate == '') {
+                            throw new NotFoundException('В объекте qr поле licensePlate не заполнено.', { cause: new Error()})
+                        }
+                    }
+                    else {
+                        throw new NotFoundException('В объекте qr отсуствует поле licensePlate.', { cause: new Error()})
+                    }
+                }
+                else {
+                    throw new NotFoundException('В теле запроса не переданно поле qr.', { cause: new Error()})
+                }
+            }
+            else {
+                throw new NotFoundException('Неверно передано тело запроса.', { cause: new Error()})
+            }
+    }
    
 }
 

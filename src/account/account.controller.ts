@@ -90,34 +90,10 @@ export class AccountController {
     @Patch('/qrs/:id')
     async bindQr (@Param() param: any, @Body() body: accounts.LinkQrRequest) {
         
-        //Получим id акка
-        let id:string = ''
-        if (typeof(param) == 'object')
-        {
-            if (param.hasOwnProperty('id'))
-            {
-                id = param.id.trim()
-            }
-        }
+        this.AccountsService.checkBody(body)
+        //return await this.AccountsService.create(body.account.name)
         
-        if (id != '')
-        {
-            if (typeof(body) == 'object')
-                {
-                    if (body.hasOwnProperty('account'))
-                    {
-                        return await this.AccountsService.create(id, body.account.name)
-                    }
-                    else 
-                    {
-                        throw new NotFoundException('В теле запроса не переданно поле account.', { cause: new Error()})
-                    }
-                }
-        }
-        else {
-            throw new NotFoundException('Не верно передан id аккаунта.', { cause: new Error()})
-        }
 
-        
-    }
+    }          
+    
 }
