@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Query, Patch, Body, NotFoundException} from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Query, Patch, Body, NotFoundException, ConflictException} from '@nestjs/common';
 import { GetAccountResponse, EditAccountResponse, GetQrsResponse } from './interfaces/account.interface';
 import { accounts } from '@car-qr-link/apis';
 import { AccountService } from './account.service';
@@ -28,7 +28,12 @@ export class AccountController {
                     && query.hasOwnProperty('field')
                     && query.field != '')
                 {
-                    return await this.AccountsService.getAccount(query.value, query.field)
+                    const result = await this.AccountsService.getAccount(query.value, query.field)
+                    if (result == null) //Проверим - вернулся ли заполненный объект
+                    {
+                        throw new NotFoundException('Аккаунт не найден.', { cause: new Error(), description: 'Аккаунт не найден.' })
+                    }
+                    return result
                 }
             }
         //Если параметры после ? не были переданны, то используем id которые указывается в пути get запроса
@@ -44,17 +49,10 @@ export class AccountController {
 
     //Изменение аккаунта
     //Праметры: param - объект с полем id, body - объект EditAccountResponse
-    //@Patch('accounts/:id')
-    //async updateAccount(@Param() param: any ,@Body() body: EditAccountResponse) {
-    //    if (typeof(param) == 'object')
-    //        {
-    //        if (param.hasOwnProperty('id')
-    //            && param.id != '')
-    //            {
-    //            return await this.AccountsService.updateAccount(param.id, body.name, body.phone)
-    //            }
-    //        }
-    //}   
+    @Patch('accounts/:id')
+    async updateAccount(@Param() param: any ,@Body() body: EditAccountResponse) {
+    
+    }   
 
     //Возвращает список qr кодов
     @Get('qrs')
@@ -89,11 +87,29 @@ export class AccountController {
     //Привязывает новый qr код к аккаунту
     @Patch('/qrs/:id')
     async bindQr (@Param() param: any, @Body() body: accounts.LinkQrRequest) {
-        
-        this.AccountsService.checkBody(body)
-        //return await this.AccountsService.create(body.account.name)
-        
 
+        //Проверим, не был ли создан аккаунт ранее:
+        let phoneNuber: string = ''
+        for (let contact of body.account.contacts) {
+            if (contact.channel == 'phone')
+            {
+                if (await this.AccountsService.getAccount(contact.address, 'phone') != null) {
+                    throw new ConflictException('Аккаунт уже существует. Номер телефона: ' + contact.address, { cause: new Error(), description: 'Аккаунт не найден.' })
+                }
+                if (phoneNuber = '') {
+                    phoneNuber = contact.channel
+                }
+            }            
+        }
+
+        //Проверим был ли передан телефон в теле запроса:
+        if (phoneNuber == '') {
+            throw new ConflictException('В теле запроса не был передан номер телефона, создание аккаунта невозможно.', { cause: new Error(), description: 'Аккаунт не найден.' })
+        }
+
+        //Создаем новый аккаунт
+        return await this.AccountsService.create(body.account.name, phoneNuber)
+        
     }          
     
 }
