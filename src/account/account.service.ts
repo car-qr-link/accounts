@@ -105,11 +105,11 @@ export class AccountService {
         return await this.qrsRepository.find()
     }
 
-    //Возвращает qr код по id:
-    async getQr(id: Number): Promise<Qr> {         
+    //Возвращает qr код по code:
+    async getQr(code: string): Promise<Qr> {         
         
         const select = {}
-        select['id'] = id
+        select['code'] = code
         const qr:Qr = await this.qrsRepository.findOneBy(select)
         if (qr == null) //Проверим - вернулся ли заполненный объект
             {
@@ -121,12 +121,35 @@ export class AccountService {
     }
 
     //Создает новый аккаунт в базе данных:
-    async create(name: string, phone: string): Promise<Account> {
+    async createAccount(name: string, phone: string): Promise<Account> {
                 
         const acc = new Account();
         acc.name  = name;
         acc.phone = phone;
-        return await this.accountsRepository.save(acc)
+        let result: Account
+        try {            
+            result = await this.accountsRepository.save(acc)
+        }
+        catch (error) {
+            throw new InternalServerErrorException(`Возникла ошибка при записи в базу данных: ${error.title}. Описание ошибки: ${error.message}`);
+        }
+        return result
+    }  
+
+    //Создает новый аккаунт в базе данных:
+    async createQr(account: Account, code: string): Promise<Qr> {
+                
+        const qr = new Qr();
+        qr.account  = account;
+        qr.code = code;
+        let result: Qr
+        try {            
+            result = await this.qrsRepository.save(qr)
+        }
+        catch (error) {
+            throw new InternalServerErrorException(`Возникла ошибка при записи в базу данных: ${error.title}. Описание ошибки: ${error.message}`);
+        }
+        return result
     }  
    
 }

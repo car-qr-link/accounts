@@ -94,7 +94,7 @@ export class AccountController {
             if (contact.channel == 'phone')
             {
                 if (await this.AccountsService.getAccount(contact.address, 'phone') != null) {
-                    throw new ConflictException('Аккаунт уже существует. Номер телефона: ' + contact.address, { cause: new Error(), description: 'Аккаунт не найден.' })
+                    throw new ConflictException('Аккаунт уже существует. Номер телефона: ' + contact.address, { cause: new Error(), description: 'Аккаунт уже существует.' })
                 }
                 if (phoneNuber = '') {
                     phoneNuber = contact.channel
@@ -104,14 +104,21 @@ export class AccountController {
 
         //Проверим был ли передан телефон в теле запроса:
         if (phoneNuber == '') {
-            throw new ConflictException('В теле запроса не был передан номер телефона, создание аккаунта невозможно.', { cause: new Error(), description: 'Аккаунт не найден.' })
+            throw new ConflictException('В теле запроса не был передан номер телефона, создание аккаунта невозможно.', { cause: new Error(), description: 'В теле запроса не был передан номер телефона, создание аккаунта невозможно.' })
         }
 
         //Создаем новый аккаунт
-        return await this.AccountsService.create(body.account.name, phoneNuber)
+        const account = await this.AccountsService.createAccount(body.account.name, phoneNuber)
 
-        //Сохраняем контактную информацию:
-        
+        //Проверим не привязан ли пераданный код уже к какому то аккаунту:
+        let qr = await this.AccountsService.getQr(body.qr.licensePlate)
+        if (qr != null) {
+            throw new ConflictException('Qr уже существует. Номер телефона: ' + qr.account.phone, { cause: new Error(), description: 'Qr уже существует.' })
+        }
+        //Сохраняем qr код:
+         qr = await this.AccountsService.createQr(account, body.qr.licensePlate)
+
+        //Сохраняем контактную информацию:        
     }          
     
 }
