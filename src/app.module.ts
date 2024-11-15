@@ -3,9 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { DataSourceOptions } from 'typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { dataSourceOptions } from './db';
+import { ApiModule } from './api/api.module';
 
 
 @Module({
@@ -35,8 +34,7 @@ import { dataSourceOptions } from './db';
           migrationsRun: process.env.NODE_ENV === 'production',
         }) as unknown as DataSourceOptions,
     }),
+    ApiModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule { }

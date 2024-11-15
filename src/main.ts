@@ -12,6 +12,8 @@ async function bootstrap() {
   app.enableShutdownHooks();
   app.useLogger(app.get(Logger));
 
+  app.setGlobalPrefix('api/v1');
+
   await app.listen(3000);
 }
 bootstrap();
