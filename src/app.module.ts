@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { DataSourceOptions } from 'typeorm';
 import { dataSourceOptions } from './db';
 import { ApiModule } from './api/api.module';
+import { CoreModule } from './core/core.module';
 
 
 @Module({
@@ -35,6 +36,7 @@ import { ApiModule } from './api/api.module';
         }) as unknown as DataSourceOptions,
     }),
     ApiModule,
+    CoreModule,
   ],
 })
 export class AppModule { }
