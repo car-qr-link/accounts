@@ -1,35 +1,46 @@
-import { accounts } from '@car-qr-link/apis';
-import { Body, Controller, Get, Logger, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { accounts, NotificationChannel, Qr } from '@car-qr-link/apis';
+import { BadRequestException, Body, ConflictException, Controller, Get, Logger, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { QR } from 'src/core/qrs/qrs.entity';
+import { QrsService } from 'src/core/qrs/qrs.service';
+import { accountToDto, qrToDto } from '../api.converter';
+import { AccountsService } from 'src/core/accounts/accounts.service';
+import { DataSource } from 'typeorm';
 
 @Controller('qrs')
 export class QrsController {
     private readonly logger = new Logger(QrsController.name);
 
+    constructor(
+        private readonly qrsService: QrsService,
+        private readonly accountsService: AccountsService,
+        private readonly dataSource: DataSource
+    ) { }
+
     @Get()
     async select(
         @Query() query: accounts.GetQrsParams
     ): Promise<accounts.GetQrsResponse> {
-        this.logger.log({ query });
-
-        return { qrs: [] };
+        return {
+            qrs: await this.qrsService.select(query.accountId).then(items => items.map(qrToDto))
+        };
     }
 
     @Get(':code')
     async get(
         @Param('code') code: string
     ): Promise<accounts.GetQrResponse> {
-        this.logger.log({ code });
+        const item = await this.qrsService.get(code);
 
-        throw new NotFoundException();
+        return { qr: qrToDto(item), account: accountToDto(item.account) };
     }
 
     @Post('emit')
     async emit(
         @Body() body: accounts.EmitQrsRequest
     ): Promise<accounts.EmitQrsResponse> {
-        this.logger.log({ body });
+        const items = await this.qrsService.emit(body.count, body.length);
 
-        return { qrs: [] };
+        return { qrs: items.map(qrToDto) };
     }
 
     @Patch(':code')
@@ -37,8 +48,14 @@ export class QrsController {
         @Param('code') code: string,
         @Body() body: accounts.LinkQrRequest
     ): Promise<accounts.LinkQrResponse> {
-        this.logger.log({ code, body });
+        // TODO: transaction
+        const account = await this.accountsService.getOrCreate(
+            body.account,
+            body.account.contacts.map(contact => ({ channel: contact.channel, value: contact.address }))
+        );
 
-        throw new NotFoundException();
+        const item = await this.qrsService.link(code, { accountId: account.id, licensePlate: body.qr.licensePlate });
+
+        return { qr: qrToDto(item), account: accountToDto(item.account) };
     }
 }
