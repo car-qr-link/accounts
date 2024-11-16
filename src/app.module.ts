@@ -33,6 +33,8 @@ import { CoreModule } from './core/core.module';
 
           synchronize: process.env.NODE_ENV !== 'production',
           migrationsRun: process.env.NODE_ENV === 'production',
+
+          logging: process.env.NODE_ENV === 'production' ? ["error"] : ["query", "error"],
         }) as unknown as DataSourceOptions,
     }),
     ApiModule,

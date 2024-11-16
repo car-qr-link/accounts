@@ -27,20 +27,26 @@ GET {{baseUrl}}/qrs?accountId= HTTP/1.1
 GET {{baseUrl}}/qrs?accountId=1 HTTP/1.1
 
 ###
-GET {{baseUrl}}/qrs/ABCD HTTP/1.1
+GET {{baseUrl}}/qrs/TWWS HTTP/1.1
 
 ###
 POST {{baseUrl}}/qrs/emit HTTP/1.1
 Content-Type: application/json
 
 {
-
+    "count": 4,
+    "length": 4
 }
 
 ###
-PATCH  {{baseUrl}}/qrs/ABCD HTTP/1.1
+PATCH {{baseUrl}}/qrs/TWWS HTTP/1.1
 Content-Type: application/json
 
 {
-
+    "account": {
+        "contacts": [{
+            "channel": "phone",
+            "address": "79990001234"
+        }]
+    }
 }
