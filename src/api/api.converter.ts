@@ -18,6 +18,6 @@ export function accountToDto(model: Account | null): accounts.Account | null {
     return {
         id: model.id.toString(),
         name: model.name,
-        contacts: model.contacts.map(contact => ({ channel: contact.channel, address: contact.value })),
+        contacts: model.contacts?.map(contact => ({ channel: contact.channel, address: contact.address })),
     };
 }

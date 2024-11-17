@@ -1,8 +1,14 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Account } from "../accounts/accounts.entity";
 
+
+export abstract class BaseQR {
+    @Column({ type: 'varchar', length: 10, nullable: true })
+    licensePlate?: string | null;
+}
+
 @Entity('qrs')
-export class QR {
+export class QR extends BaseQR {
     @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
     _id: number;
 
@@ -14,9 +20,6 @@ export class QR {
 
     @ManyToOne(() => Account)
     account: Account | null;
-
-    @Column({ type: 'varchar', length: 10, nullable: true })
-    licensePlate: string | null;
 
     @CreateDateColumn({ type: "datetime", nullable: false })
     createdAt: Date;
