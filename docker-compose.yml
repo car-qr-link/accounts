@@ -2,8 +2,33 @@ services:
   app:
     build:
       context: .
+      args:
+        - NPM_TOKEN=${NPM_TOKEN}
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=mariadb://accounts:accounts@db:3306/accounts
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:lts
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=accounts
+      - MYSQL_USER=accounts
+      - MYSQL_PASSWORD=accounts
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mariadb_data:
