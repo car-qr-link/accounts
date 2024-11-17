@@ -8,4 +8,4 @@ import { Account, Contact } from './accounts.entity';
   providers: [AccountsService],
   exports: [AccountsService],
 })
-export class AccountsModule { }
+export class AccountsModule {}

@@ -8,4 +8,4 @@ import { QR } from './qrs.entity';
   providers: [QrsService],
   exports: [QrsService],
 })
-export class QrsModule { }
+export class QrsModule {}
