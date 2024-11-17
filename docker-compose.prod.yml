@@ -1,0 +1,21 @@
+services:
+  app:
+    image: ghcr.io/car-qr-link/accounts:latest
+    container_name: accounts
+    networks:
+      - internal
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+networks:
+  internal:
+    external: true
+  public:
+    external: true
