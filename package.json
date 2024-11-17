@@ -1,7 +1,7 @@
 {
-  "name": "@car-qr-link/backend-template",
+  "name": "@car-qr-link/accounts",
   "version": "0.0.1",
-  "description": "Template repository for NestJS backend projects",
+  "description": "Accounts service for Car QR Link",
   "author": "Aleksandr Soloshenko",
   "private": true,
   "license": "Apache-2.0",
