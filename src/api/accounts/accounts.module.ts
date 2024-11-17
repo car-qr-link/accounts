@@ -5,6 +5,6 @@ import { AccountsModule as CoreAccountsModule } from 'src/core/accounts/accounts
 
 @Module({
   imports: [CoreQrsModule, CoreAccountsModule],
-  controllers: [AccountsController]
+  controllers: [AccountsController],
 })
-export class AccountsModule { }
+export class AccountsModule {}

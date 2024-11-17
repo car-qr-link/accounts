@@ -3,6 +3,6 @@ import { AccountsModule } from './accounts/accounts.module';
 import { QrsModule } from './qrs/qrs.module';
 
 @Module({
-  imports: [AccountsModule, QrsModule]
+  imports: [AccountsModule, QrsModule],
 })
 export class ApiModule {}

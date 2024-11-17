@@ -7,7 +7,6 @@ import { dataSourceOptions } from './db';
 import { ApiModule } from './api/api.module';
 import { CoreModule } from './core/core.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -34,11 +33,14 @@ import { CoreModule } from './core/core.module';
           synchronize: process.env.NODE_ENV !== 'production',
           migrationsRun: process.env.NODE_ENV === 'production',
 
-          logging: process.env.NODE_ENV === 'production' ? ["error"] : ["query", "error"],
+          logging:
+            process.env.NODE_ENV === 'production'
+              ? ['error']
+              : ['query', 'error'],
         }) as unknown as DataSourceOptions,
     }),
     ApiModule,
     CoreModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}
