@@ -13,7 +13,6 @@ export class QrsController {
     constructor(
         private readonly qrsService: QrsService,
         private readonly accountsService: AccountsService,
-        private readonly dataSource: DataSource
     ) { }
 
     @Get()
@@ -51,10 +50,10 @@ export class QrsController {
         // TODO: transaction
         const account = await this.accountsService.getOrCreate(
             body.account,
-            body.account.contacts.map(contact => ({ channel: contact.channel, value: contact.address }))
+            body.account.contacts
         );
 
-        const item = await this.qrsService.link(code, { accountId: account.id, licensePlate: body.qr.licensePlate });
+        const item = await this.qrsService.link(code, account.id.toString(), body.qr);
 
         return { qr: qrToDto(item), account: accountToDto(item.account) };
     }

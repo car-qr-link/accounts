@@ -1,13 +1,22 @@
 import { accounts } from '@car-qr-link/apis';
 import { Body, Controller, Get, Logger, NotFoundException, Param, Patch, Query } from '@nestjs/common';
+import { AccountsService } from 'src/core/accounts/accounts.service';
+import { accountToDto, qrToDto } from '../api.converter';
+import { QrsService } from 'src/core/qrs/qrs.service';
 
 @Controller('accounts')
 export class AccountsController {
     private readonly logger = new Logger(AccountsController.name);
 
+    constructor(
+        private readonly accountsService: AccountsService,
+        private readonly qrsService: QrsService,
+    ) { }
+
     @Get()
     async select(): Promise<accounts.GetAccountsResponse> {
-        return { accounts: [] };
+        const items = await this.accountsService.select();
+        return { accounts: items.map(account => accountToDto(account)) };
     }
 
     @Get(':value')
@@ -15,9 +24,10 @@ export class AccountsController {
         @Param('value') value: string,
         @Query('field') field: accounts.GetAccountFieldParam = accounts.GetAccountFieldParam.ID
     ): Promise<accounts.GetAccountResponse> {
-        this.logger.log({ value, field });
+        const item = await this.accountsService.getBy({ [field]: value });
+        const qrs = await this.qrsService.select(item.id.toString());
 
-        throw new NotFoundException();
+        return { account: accountToDto(item), qrs: qrs.map(qr => qrToDto(qr)) };
     }
 
     @Patch(':id')
@@ -25,8 +35,10 @@ export class AccountsController {
         @Param('id') id: string,
         @Body() body: accounts.EditAccountRequest
     ): Promise<accounts.EditAccountResponse> {
-        this.logger.log({ id, body });
+        const { contacts, ...account } = body.account;
+        const item = await this.accountsService.update(id, account, contacts);
+        const qrs = await this.qrsService.select(item.id.toString());
 
-        throw new NotFoundException();
+        return { account: accountToDto(item), qrs: qrs.map(qr => qrToDto(qr)) };
     }
 }

@@ -29,11 +29,11 @@ export class BaseContact {
     channel: NotificationChannel;
 
     @Column({ type: 'varchar', length: 64, nullable: false })
-    value: string;
+    address: string;
 }
 
 @Entity('contacts')
-@Index(['account', 'channel', 'value'], { unique: true })
+@Index(['account', 'channel', 'address'], { unique: true })
 export class Contact extends BaseContact {
     @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
     _id: number;

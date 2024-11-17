@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { QR } from './qrs.entity';
+import { BaseQR, QR } from './qrs.entity';
 import { accounts, Qr } from '@car-qr-link/apis';
 import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,12 +37,12 @@ export class QrsService {
         return this.qrs.save(items);;
     }
 
-    async link(code: string, fields: Pick<QR, 'accountId' | 'licensePlate'>): Promise<QR> {
+    async link(code: string, accountId: string, fields: BaseQR): Promise<QR> {
         if (!await this.qrs.existsBy({ code })) {
             throw new NotFoundException();
         }
 
-        const updateResult = await this.qrs.update({ code, accountId: IsNull() }, fields);
+        const updateResult = await this.qrs.update({ code, accountId: IsNull() }, { ...fields, accountId: parseInt(accountId) });
         if (updateResult.affected === 0) {
             throw new ConflictException("QR уже связан с аккаунтом");
         }
